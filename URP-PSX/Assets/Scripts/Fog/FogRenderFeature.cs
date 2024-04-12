@@ -13,15 +13,23 @@ namespace PSX
             fogPass = new FogPass(RenderPassEvent.BeforeRenderingPostProcessing);
         }
 
+#if UNITY_2022_1_OR_NEWER
+        public override void SetupRenderPasses(ScriptableRenderer renderer, in RenderingData renderingData)
+        { fogPass.Setup(renderer.cameraColorTargetHandle); }
+#endif
+
         //ScripstableRendererFeature is an abstract class, you need this method
         public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
         {
+#if !UNITY_2022_1_OR_NEWER
             fogPass.Setup(renderer.cameraColorTarget);
+#endif
+
             renderer.EnqueuePass(fogPass);
         }
     }
-    
-    
+
+
     public class FogPass : ScriptableRenderPass
     {
         private static readonly string shaderPath = "PostEffect/Fog";
